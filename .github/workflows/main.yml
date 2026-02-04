@@ -16,7 +16,7 @@ on:
         type: string
       dependencies:
         required: true
-        type: environment
+        type: string
 jobs:
   issue:
     name: Issue
