@@ -1,0 +1,14 @@
+rootID: "ms-poc-webhook"
+
+modules:
+
+  ms-poc-webhook:
+    ref: "main"
+    type: "ms"
+    needs:
+      - "api-ne-gestion-clientes"
+
+  api-poc-webhook:
+    ref: "main"
+    type: "api"
+    needs: []
