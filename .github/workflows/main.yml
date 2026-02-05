@@ -6,7 +6,7 @@ on:
       environment:
         description: 'Environment'
         required: true
-        default: 'integration'
+        default: "integration"
         type: choice
         options:
         - integration
