@@ -17,7 +17,7 @@ on:
 
 jobs:
   tree:
-    name: Resolve Dependency Tree
+    name: Tree
     runs-on: ubuntu-latest
     permissions: write-all
     outputs:
@@ -25,38 +25,29 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-          sudo wget -qO /usr/local/bin/yq \
-            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
-
-      - name: Run dependency resolver
+      - name: Run Script
         id: tree
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          chmod +x ./ee.sh
+          chmod +x ${{ github.workspace}}/ee.sh
+          
+          TREE_JSON=$(bash ${{ github.workspace }}/ee.sh)
 
-          TREE_JSON=$(./ee.sh)
-
-          # Compactar a una sola línea para outputs
+          # normalizar a una sola línea (por seguridad)
           TREE_JSON=$(echo "$TREE_JSON" | jq -c .)
 
           echo "tree=$TREE_JSON" >> "$GITHUB_OUTPUT"
-
+  
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          
   issue:
-    name: Create Deployment Issue
+    name: Issue
     runs-on: ubuntu-latest
     needs: tree
     permissions: write-all
     steps:
       - name: Create Issue
-        shell: bash
         run: |
           curl -L \
             -X POST \
@@ -65,28 +56,29 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/${{ github.repository }}/issues \
             -d "$(jq -n \
+              --arg title "[EE] ${{ github.event.repository.name }}" \
               --arg repo "${{ github.event.repository.name }}" \
               --arg ref "${{ inputs.branch }}" \
+              --arg tree '${{ needs.tree.outputs.tree }}' \
               --arg actor "${{ github.actor }}" \
-              --arg env "${{ inputs.environment }}" \
-              --arg tree '${{ needs.tree.outputs.tree }}' '
+              --arg env "${{ inputs.environment }}" '
               {
-                title: "[EE] " + $repo,
+                title: $title,
+                
                 body: (
                   "## Ephemeral Environment Deployment\n\n" +
                   "### Context\n" +
-                  "This issue was automatically generated to deploy an ephemeral environment based on repository dependencies.\n\n" +
-
+                  "This issue was automatically generated to deploy an ephemeral environment.\n\n" +
+          
                   "### Root Service\n" +
                   "- **Repository:** " + $repo + "\n" +
                   "- **Ref:** " + $ref + "\n" +
                   "- **Triggered by:** @" + $actor + "\n" +
                   "- **Environment:** " + $env + "\n\n" +
-
+          
                   "---\n\n" +
-
+          
                   "### Dependency Graph\n" +
-                  "The following graph was resolved from `ephemeral.yml` files:\n\n" +
                   "```json\n" +
                   $tree +
                   "\n```"
@@ -94,7 +86,7 @@ jobs:
                 assignees: [$actor],
                 labels: ["ephemeral", "main", $env]
               }'
-            )"
+            )"  
 #  tree:
 #    name: Tree
 #    runs-on: ubuntu-latest
