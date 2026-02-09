@@ -22,11 +22,11 @@ jobs:
     permissions: write-all
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6
       - name: Run Script
         run: |
-          chmod +x ${{ github.workflow}}/ee.sh
-          sh ${{ github.workflow}}/ee.sh
+          chmod +x ${{ github.workspace}}/ee.sh
+          ./${{ github.workspace}}/ee.sh
           
   issue:
     name: Issue
