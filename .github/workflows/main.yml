@@ -72,7 +72,7 @@ jobs:
           
                   "### Root Service\n" +
                   "- **Repository:** " + $repo + "\n" +
-                  "- **Ref:**" + $ref + "\n" +
+                  "- **eef:**" + $ref + "\n" +
                   "- **Triggered by:** @" + $actor + "\n" +
                   "- **Environment:** " + $env + "\n\n" +
           
