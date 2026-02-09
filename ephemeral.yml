@@ -1,14 +1,4 @@
-rootID: "ms-ne-poc-webhook"
-
-modules:
-
-  ms-poc-webhook:
-    ref: "main"
-    type: "ms"
-    needs:
-      - "api-ne-poc-webhook"
-
-  api-ne-poc-webhook:
-    ref: "main"
-    type: "api"
-    needs: []
+dependencies:
+  - repo: api-ne-poc-webhook
+    ref: main
+    apiVersion: 6.0.0
