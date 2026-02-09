@@ -2,3 +2,5 @@ dependencies:
   - repo: api-ne-poc-webhook
     ref: main
     apiVersion: 6.0.0
+  - repo: ms-sp-poc-webhook
+    ref: main
