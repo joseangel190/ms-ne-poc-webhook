@@ -64,10 +64,21 @@ jobs:
               --arg env "${{ inputs.environment }}" '
               {
                 title: $title,
+                
                 body: (
-                  "#### Deploy Ephemeral Environments\n" +
-                  "repo: " + $repo + "\n" +
-                  "ref: " + $ref + "\n\n" +
+                  "## Ephemeral Environment Deployment\n\n" +
+                  "### Context\n" +
+                  "This issue was automatically generated to deploy an ephemeral environment.\n\n" +
+          
+                  "### Root Service\n" +
+                  "- **Repository:** " + $repo + "\n" +
+                  "- **Ref:** " + $ref + "\n" +
+                  "- **Triggered by:** @" + $actor + "\n" +
+                  "- **Environment:** " + $env + "\n\n" +
+          
+                  "---\n\n" +
+          
+                  "### Dependency Graph\n" +
                   "```json\n" +
                   $tree +
                   "\n```"
